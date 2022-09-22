@@ -30,6 +30,8 @@ Token Lexer::getNextToken(SemanticValue& sval, std::istream& is) {
     is.get(curChar);
     return Token::SingleChar;
   }
+
+  return Token::Error;
 }
 
 std::string Lexer::scanIdentifierOrKeyword(std::istream& is) {
