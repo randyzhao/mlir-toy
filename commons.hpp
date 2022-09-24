@@ -3,6 +3,7 @@
 #include <string>
 
 enum Token {
+  Nil = 100,
   Identifier = 1010,
   Return = 1020,
   FloatConst = 1030,
