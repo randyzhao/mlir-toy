@@ -13,7 +13,10 @@ int main(int argc, char **argv) {
   Parser parser(lexer, fin);
 
   auto module = parser.parse();
-  if (module) std::cout << "Parse OK" << std::endl;
+  if (module) {
+    AST::ASTDumper dumper(std::cout);
+    dumper.visit(*module);
+  }
   else std::cout << "Parse error" << std::endl;
 
   return 0;
