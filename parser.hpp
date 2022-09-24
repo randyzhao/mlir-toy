@@ -27,6 +27,7 @@ private:
   unique_ptr<AST::Expression> parseExpression();
   unique_ptr<AST::VarExpression> parseVarExpression();
   unique_ptr<AST::NestedListExpression> parseNestedListExpression();
+  unique_ptr<AST::DispatchExpression> parseDispatchExpression();
   vector<int> parseIntegerList();
   vector<float> parseFloatList();
   unique_ptr<AST::NestedList> parseNestedList();

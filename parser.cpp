@@ -91,6 +91,10 @@ unique_ptr<AST::Expression> Parser::parseExpression() {
     return parseVarExpression();
   } else if (getCurrentTok() == Token::SingleChar && sval.singleCharValue == '[') {
     return parseNestedListExpression();
+  } else if (getCurrentTok() == Token::Identifier &&
+             getNextTok() == Token::SingleChar &&
+             nextSVal.singleCharValue == '(') {
+    return parseDispatchExpression();
   }
 
   return nullptr;
@@ -118,6 +122,15 @@ unique_ptr<AST::VarExpression> Parser::parseVarExpression() {
 
 unique_ptr<AST::NestedListExpression> Parser::parseNestedListExpression() {
   return std::make_unique<AST::NestedListExpression>(parseNestedList());
+}
+
+unique_ptr<AST::DispatchExpression> Parser::parseDispatchExpression() {
+  string name = std::move(sval.identifierValue);
+  consume(); // identifier
+  consume(); // (
+  vector<string> args = parseFormalsOrArgs();
+  consume(); // )
+  return std::make_unique<AST::DispatchExpression>(name, args);
 }
 
 vector<int> Parser::parseIntegerList() {

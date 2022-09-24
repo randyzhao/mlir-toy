@@ -21,6 +21,7 @@ struct MulExpression;
 struct DispatchExpression;
 struct NestedListExpression;
 struct VarExpression;
+struct DispatchExpression;
 struct Error;
 
 struct NestedList;
@@ -102,6 +103,9 @@ struct DispatchExpression: Expression {
   vector<string> args;
 
   void accept(Visitor& visitor) { visitor.visit(*this); }
+
+  DispatchExpression(string name, vector<string> args):
+    name(name), args(std::move(args)) {}
 };
 
 struct NestedListExpression: Expression {
@@ -182,6 +186,17 @@ public:
   void visit(NestedListExpression& expr) {
     curLevel++;
     printNestedList(*expr.nestedList);
+    curLevel--;
+  }
+
+  void visit(DispatchExpression& expr) {
+    curLevel++;
+    os << pad() << "Call '" << expr.name << "'" << std::endl;
+    curLevel++;
+    for (auto& name : expr.args) {
+      os << pad() << "var: " << name << std::endl;
+    }
+    curLevel--;
     curLevel--;
   }
 
