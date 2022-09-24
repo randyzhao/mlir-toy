@@ -35,7 +35,7 @@ unique_ptr<AST::Function> Parser::parseFunction() {
     return nullptr;
   }
   consume();
-  // TODO: Parse params
+  ret->formals = parseFormals();
   if (getCurrentTok() != Token::SingleChar || sval.singleCharValue != ')') {
     return nullptr;
   }
@@ -49,6 +49,22 @@ unique_ptr<AST::Function> Parser::parseFunction() {
     return nullptr;
   }
   consume();
+  return ret;
+}
+
+vector<string> Parser::parseFormals() {
+  vector<string> ret;
+  while (getCurrentTok() == Token::Identifier) {
+    ret.push_back(sval.identifierValue);
+    consume(); // consume identifier
+    // TODO: Handle syntax error
+
+    if (sval.singleCharValue == ',') {
+      consume();
+    } else {
+      break;
+    }
+  }
   return ret;
 }
 

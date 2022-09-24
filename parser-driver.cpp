@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 
 #include "ast.hpp"
 #include "parser.hpp"
@@ -12,6 +13,8 @@ int main(int argc, char **argv) {
   Parser parser(lexer, fin);
 
   auto module = parser.parse();
+  if (module) std::cout << "Parse OK" << std::endl;
+  else std::cout << "Parse error" << std::endl;
 
   return 0;
 }

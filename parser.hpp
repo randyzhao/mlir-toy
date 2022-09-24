@@ -22,6 +22,7 @@ private:
   void consume();
 
   unique_ptr<AST::Function> parseFunction();
+  vector<string> parseFormals();
 
   Token curTok = Token::Nil;
   Token nextTok = Token::Nil;

@@ -1,4 +1,4 @@
-def multiply_transpose() {
+def multiply_transpose(a, b) {
 
 }
 

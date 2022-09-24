@@ -46,7 +46,7 @@ struct Module: ASTNode {
 
 struct Function: ASTNode {
   string name;
-  vector<string> params;
+  vector<string> formals;
   vector<unique_ptr<Statement> > statements;
 
   void accept(Visitor& visitor) { visitor.visit(*this); }
