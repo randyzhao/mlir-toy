@@ -22,7 +22,15 @@ private:
   void consume();
 
   unique_ptr<AST::Function> parseFunction();
-  vector<string> parseFormals();
+  vector<string> parseFormalsOrArgs();
+  vector<unique_ptr<AST::Expression> > parseExpressions();
+  unique_ptr<AST::Expression> parseExpression();
+  unique_ptr<AST::VarExpression> parseVarExpression();
+  unique_ptr<AST::NestedListExpression> parseNestedListExpression();
+  vector<int> parseIntegerList();
+  vector<float> parseFloatList();
+  unique_ptr<AST::NestedList> parseNestedList();
+
 
   Token curTok = Token::Nil;
   Token nextTok = Token::Nil;

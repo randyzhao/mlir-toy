@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <ostream>
+#include <variant>
 
 using std::vector;
 using std::unique_ptr;
@@ -14,18 +15,35 @@ namespace AST {
 struct ASTNode;
 struct Module;
 struct Function;
-struct Statement;
-struct ReturnStatement;
+struct ReturnExpression;
 struct Expression;
 struct MulExpression;
+struct DispatchExpression;
+struct NestedListExpression;
+struct VarExpression;
 struct Error;
+
+struct NestedList;
 
 struct Visitor {
   virtual void visit(Module& module) {}
   virtual void visit(Function& function) {}
-  virtual void visit(ReturnStatement& stat) {}
+  virtual void visit(ReturnExpression& expr) {}
   virtual void visit(MulExpression& expr) {}
+  virtual void visit(VarExpression& expr) {}
+  virtual void visit(DispatchExpression& expr) {}
+  virtual void visit(NestedListExpression& expr) {}
   virtual void visit(Error& err) {}
+};
+
+struct NestedList {
+  using ListOfNestedLists = std::vector<NestedList>;
+  using FloatList = std::vector<float>;
+  using ListElement = std::variant<ListOfNestedLists, FloatList>;
+
+  ListElement element;
+
+  explicit NestedList(ListElement element): element(std::move(element)) {}
 };
 
 struct ASTNode {
@@ -48,17 +66,7 @@ struct Module: ASTNode {
 struct Function: ASTNode {
   string name;
   vector<string> formals;
-  vector<unique_ptr<Statement> > statements;
-
-  void accept(Visitor& visitor) { visitor.visit(*this); }
-};
-
-struct Statement: ASTNode {
-  virtual void accept(Visitor& visitor) = 0;
-};
-
-struct ReturnStatement: Statement {
-  unique_ptr<Expression> expr;
+  vector<unique_ptr<Expression> > expressions;
 
   void accept(Visitor& visitor) { visitor.visit(*this); }
 };
@@ -67,7 +75,41 @@ struct Expression: ASTNode {
   virtual void accept(Visitor& visitor) = 0;
 };
 
+struct ReturnExpression: Expression {
+  unique_ptr<Expression> expr;
+
+  void accept(Visitor& visitor) { visitor.visit(*this); }
+
+  ReturnExpression(unique_ptr<Expression> expr): expr(std::move(expr)) {}
+};
+
+struct VarExpression: Expression {
+  string name;
+  vector<int> shape;
+  unique_ptr<Expression> init;
+  void accept(Visitor& visitor) { visitor.visit(*this); }
+
+  VarExpression(string name, vector<int>& shape, unique_ptr<Expression> init):
+    name(name), shape(std::move(shape)), init(std::move(init)) {}
+};
+
 struct MulExpression: Expression {
+  void accept(Visitor& visitor) { visitor.visit(*this); }
+};
+
+struct DispatchExpression: Expression {
+  string name;
+  vector<string> args;
+
+  void accept(Visitor& visitor) { visitor.visit(*this); }
+};
+
+struct NestedListExpression: Expression {
+  unique_ptr<NestedList> nestedList;
+
+  NestedListExpression(unique_ptr<NestedList> nestedList):
+    nestedList(std::move(nestedList)) {}
+
   void accept(Visitor& visitor) { visitor.visit(*this); }
 };
 
@@ -99,11 +141,9 @@ public:
 
 
     os << pad() << "Block {" << std::endl;
-    curLevel++;
-    for (auto& stat : function.statements) {
-      stat->accept(*this);
+    for (auto& expr : function.expressions) {
+      expr->accept(*this);
     }
-    curLevel--;
     os << pad() << "}" << std::endl;
 
     curLevel--;
@@ -111,7 +151,7 @@ public:
     curLevel--;
   }
 
-  void visit(ReturnStatement& stat) {
+  void visit(ReturnExpression& expr) {
     curLevel++;
 
     os << pad() << "Return" << std::endl;
@@ -125,6 +165,26 @@ public:
 
     curLevel--;
   }
+
+  void visit(VarExpression& expr) {
+    curLevel++;
+
+    os << pad() << "VarDecl " << expr.name << "<";
+    for (auto& n : expr.shape) {
+      os << n << ",";
+    }
+    os << ">" << std::endl;
+    if (expr.init) expr.init->accept(*this);
+
+    curLevel--;
+  }
+
+  void visit(NestedListExpression& expr) {
+    curLevel++;
+    printNestedList(*expr.nestedList);
+    curLevel--;
+  }
+
   void visit(Error& err) {
     curLevel++;
 
@@ -151,6 +211,24 @@ private:
       }
     }
     return ret;
+  }
+
+  void printNestedList(NestedList& nl) {
+    os << pad() << "Literal: [";
+    if (std::holds_alternative<std::vector<float>>(nl.element)) {
+      std::vector<float>& nums = std::get<std::vector<float>>(nl.element);
+      for (int i = 0; i < nums.size(); i++) {
+        os << nums[i];
+        if (i != nums.size() - 1) os << ",";
+      }
+    } else {
+      std::vector<NestedList> lists = std::get<std::vector<NestedList>>(nl.element);
+      for (int i = 0; i < lists.size(); i++) {
+        printNestedList(lists[i]);
+        if (i != lists.size() - 1) os << ",";
+      }
+    }
+    os << "]" << std::endl;
   }
 };
 

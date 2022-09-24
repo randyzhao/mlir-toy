@@ -35,7 +35,7 @@ unique_ptr<AST::Function> Parser::parseFunction() {
     return nullptr;
   }
   consume();
-  ret->formals = parseFormals();
+  ret->formals = parseFormalsOrArgs();
   if (getCurrentTok() != Token::SingleChar || sval.singleCharValue != ')') {
     return nullptr;
   }
@@ -44,7 +44,12 @@ unique_ptr<AST::Function> Parser::parseFunction() {
     return nullptr;
   }
   consume();
-  // TODO: Parse statements
+
+  while (getCurrentTok() != Token::SingleChar || sval.singleCharValue != '}') {
+    ret->expressions.push_back(std::move(parseExpression()));
+    consume(); // ;
+  }
+
   if (getCurrentTok() != Token::SingleChar || sval.singleCharValue != '}') {
     return nullptr;
   }
@@ -52,7 +57,7 @@ unique_ptr<AST::Function> Parser::parseFunction() {
   return ret;
 }
 
-vector<string> Parser::parseFormals() {
+vector<string> Parser::parseFormalsOrArgs() {
   vector<string> ret;
   while (getCurrentTok() == Token::Identifier) {
     ret.push_back(sval.identifierValue);
@@ -65,6 +70,100 @@ vector<string> Parser::parseFormals() {
       break;
     }
   }
+  return ret;
+}
+
+vector<unique_ptr<AST::Expression> > Parser::parseExpressions() {
+  vector<unique_ptr<AST::Expression> > ret;
+  while (getCurrentTok() != Token::SingleChar || sval.singleCharValue != '}') {
+    auto expr = parseExpression();
+    if (expr) ret.push_back(std::move(expr));
+    // TODO: Handle error
+  }
+  return ret;
+}
+
+unique_ptr<AST::Expression> Parser::parseExpression() {
+  if (getCurrentTok() == Token::Return) {
+    consume();
+    return std::make_unique<AST::ReturnExpression>(parseExpression());
+  } else if (getCurrentTok() == Token::Var) {
+    return parseVarExpression();
+  } else if (getCurrentTok() == Token::SingleChar && sval.singleCharValue == '[') {
+    return parseNestedListExpression();
+  }
+
+  return nullptr;
+}
+
+unique_ptr<AST::VarExpression> Parser::parseVarExpression() {
+  // TODO: Handle error
+
+  consume(); // var
+  string name = sval.identifierValue;
+  consume(); // name
+  vector<int> shape;
+  if (getCurrentTok() == Token::SingleChar && sval.singleCharValue == '<') {
+    consume(); // <
+    shape = std::move(parseIntegerList());
+    consume(); // >
+  }
+  unique_ptr<AST::Expression> init = nullptr;
+  if (getCurrentTok() == Token::SingleChar && sval.singleCharValue == '=') {
+    consume(); // =
+    init = std::move(parseExpression());
+  }
+  return std::make_unique<AST::VarExpression>(name, shape, std::move(init));
+}
+
+unique_ptr<AST::NestedListExpression> Parser::parseNestedListExpression() {
+  return std::make_unique<AST::NestedListExpression>(parseNestedList());
+}
+
+vector<int> Parser::parseIntegerList() {
+  vector<int> ret;
+  while (getCurrentTok() == Token::FloatConst) {
+    ret.push_back(int(sval.floatConstValue));
+    consume();
+
+    if (getCurrentTok() == Token::SingleChar && sval.singleCharValue == ',') {
+      consume();
+    } else {
+      break;
+    }
+  }
+  return ret;
+}
+
+vector<float> Parser::parseFloatList() {
+  vector<float> ret;
+  while (getCurrentTok() == Token::FloatConst) {
+    ret.push_back(sval.floatConstValue);
+    consume();
+
+    if (getCurrentTok() == Token::SingleChar && sval.singleCharValue == ',') {
+      consume();
+    } else {
+      break;
+    }
+  }
+  return ret;
+}
+
+unique_ptr<AST::NestedList> Parser::parseNestedList() {
+  if (getCurrentTok() != Token::SingleChar || sval.singleCharValue != '[') {
+    return nullptr;
+  }
+
+  unique_ptr<AST::NestedList> ret = nullptr;
+
+  consume(); // [
+  if (getCurrentTok() == Token::SingleChar) {
+    ret = std::make_unique<AST::NestedList>(*parseNestedList());
+  } else {
+    ret = std::make_unique<AST::NestedList>(parseFloatList());
+  }
+  consume(); // ]
   return ret;
 }
 
