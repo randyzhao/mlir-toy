@@ -1,10 +1,6 @@
-def multiply_transpose(a, b) {
-  var c<1, 3> = [1, 2, 3];
-}
-
 def main() {
-  var a = [1, 2, 3];
-  var b = [4, 5, 6];
-  var c = multiply_transpose(a, b);
+  var a = [[1, 2, 3], [4, 5, 6]];
+  var b = transpose(a);
+  print(b);
 }
 

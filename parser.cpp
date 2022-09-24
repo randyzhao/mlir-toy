@@ -46,7 +46,8 @@ unique_ptr<AST::Function> Parser::parseFunction() {
   consume();
 
   while (getCurrentTok() != Token::SingleChar || sval.singleCharValue != '}') {
-    ret->expressions.push_back(std::move(parseExpression()));
+    auto expr = parseExpression();
+    if (expr) ret->expressions.push_back(std::move(expr));
     consume(); // ;
   }
 
