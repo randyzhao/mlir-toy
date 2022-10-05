@@ -9,10 +9,10 @@ add_subdirectory(lexer)
 add_subdirectory(parser)
 add_subdirectory(lib)
 
-#add_executable(lexer-driver
-#  lexer-driver.cpp)
+add_executable(lexer-driver
+  lexer-driver.cpp)
 
-#target_link_libraries(lexer-driver lexer)
+target_link_libraries(lexer-driver lexer)
 
 add_executable(parser-driver parser-driver.cpp)
 target_link_libraries(parser-driver parser)
