@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "ast.hpp"
+#include "lib/ast.hpp"
 #include "parser.hpp"
 #include "lexer.hpp"
 

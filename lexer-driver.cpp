@@ -3,7 +3,7 @@
 #include <string>
 
 #include "lexer.hpp"
-#include "commons.hpp"
+#include "lib/commons.hpp"
 
 int main(int argc, char **argv) {
   std::string filename = argc < 2 ? "test.toy" : argv[1];
