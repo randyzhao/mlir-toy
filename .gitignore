@@ -31,9 +31,6 @@
 *.out
 *.app
 
-lexer
-parser
-
 .idea/
 .vscode/
 
