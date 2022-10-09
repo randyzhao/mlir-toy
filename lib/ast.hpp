@@ -54,14 +54,14 @@ struct ASTNode {
 
 struct Error: ASTNode {
   string errorMsg;
-  void accept(Visitor& visitor) { visitor.visit(*this); }
+  void accept(Visitor& visitor) override { visitor.visit(*this); }
 
   Error(string errorMsg): errorMsg(errorMsg) {}
 };
 
 struct Module: ASTNode {
   vector<unique_ptr<Function> > functions;
-  void accept(Visitor& visitor) { visitor.visit(*this); }
+  void accept(Visitor& visitor) override { visitor.visit(*this); }
 };
 
 struct Function: ASTNode {
@@ -69,7 +69,7 @@ struct Function: ASTNode {
   vector<string> formals;
   vector<unique_ptr<Expression> > expressions;
 
-  void accept(Visitor& visitor) { visitor.visit(*this); }
+  void accept(Visitor& visitor) override { visitor.visit(*this); }
 };
 
 struct Expression: ASTNode {
@@ -79,7 +79,7 @@ struct Expression: ASTNode {
 struct ReturnExpression: Expression {
   unique_ptr<Expression> expr;
 
-  void accept(Visitor& visitor) { visitor.visit(*this); }
+  void accept(Visitor& visitor) override { visitor.visit(*this); }
 
   ReturnExpression(unique_ptr<Expression> expr): expr(std::move(expr)) {}
 };
@@ -88,21 +88,21 @@ struct VarExpression: Expression {
   string name;
   vector<int> shape;
   unique_ptr<Expression> init;
-  void accept(Visitor& visitor) { visitor.visit(*this); }
+  void accept(Visitor& visitor) override { visitor.visit(*this); }
 
   VarExpression(string name, vector<int>& shape, unique_ptr<Expression> init):
     name(name), shape(std::move(shape)), init(std::move(init)) {}
 };
 
 struct MulExpression: Expression {
-  void accept(Visitor& visitor) { visitor.visit(*this); }
+  void accept(Visitor& visitor) override { visitor.visit(*this); }
 };
 
 struct DispatchExpression: Expression {
   string name;
   vector<string> args;
 
-  void accept(Visitor& visitor) { visitor.visit(*this); }
+  void accept(Visitor& visitor) override { visitor.visit(*this); }
 
   DispatchExpression(string name, vector<string> args):
     name(name), args(std::move(args)) {}
@@ -114,7 +114,7 @@ struct NestedListExpression: Expression {
   NestedListExpression(unique_ptr<NestedList> nestedList):
     nestedList(std::move(nestedList)) {}
 
-  void accept(Visitor& visitor) { visitor.visit(*this); }
+  void accept(Visitor& visitor) override { visitor.visit(*this); }
 };
 
 class ASTDumper: Visitor {
