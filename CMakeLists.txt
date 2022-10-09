@@ -39,4 +39,4 @@ add_executable(parser-driver parser-driver.cpp)
 target_link_libraries(parser-driver parser)
 
 add_executable(toyir-gen-driver toyir-gen-driver.cpp)
-target_link_libraries(toyir-gen-driver codegen)
+target_link_libraries(toyir-gen-driver codegen lexer parser)
