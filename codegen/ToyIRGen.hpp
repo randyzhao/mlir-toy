@@ -11,9 +11,12 @@ public:
   void visit(AST::Module& module) override;
   void visit(AST::Function& function) override;
 
-  ToyIRGen(mlir::MLIRContext &context): builder(&context) {}
+  ToyIRGen(): builder(&context) {
+    // context.getOrLoadDialect<mlir::toy::ToyDialect>();
+  }
 
 private:
   mlir::ModuleOp theModule;
   mlir::OpBuilder builder;
+  mlir::MLIRContext context;
 };

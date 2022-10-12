@@ -37,9 +37,7 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  mlir::MLIRContext context;
-
-  ToyIRGen gen(context);
+  ToyIRGen gen;
   gen.visit(*module);
 
   return 0;
