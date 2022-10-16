@@ -10,8 +10,8 @@ public:
 
   Token getNextToken(SemanticValue& sval, std::istream& is);
 private:
-  char curChar;
   bool hasError;
+  char curChar;
   std::string scanIdentifierOrKeyword(std::istream& is);
   float scanFloat(std::istream& is);
   void handleLineComment(std::istream& is);

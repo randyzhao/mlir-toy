@@ -73,7 +73,7 @@ struct Function: ASTNode {
 };
 
 struct Expression: ASTNode {
-  virtual void accept(Visitor& visitor) = 0;
+  virtual void accept(Visitor& visitor) override = 0;
 };
 
 struct ReturnExpression: Expression {
@@ -121,7 +121,7 @@ class ASTDumper: Visitor {
 public:
   ASTDumper(std::ostream& os): os(os) {}
 
-  void visit(Module& module) {
+  void visit(Module& module) override {
     curLevel++;
 
     os << pad() << "Module:" << std::endl;
@@ -133,7 +133,7 @@ public:
     curLevel--;
   }
 
-  void visit(Function& function) {
+  void visit(Function& function) override {
     curLevel++;
 
     os << pad() << "Function" << std::endl;
@@ -155,14 +155,14 @@ public:
     curLevel--;
   }
 
-  void visit(ReturnExpression& expr) {
+  void visit(ReturnExpression& expr) override {
     curLevel++;
 
     os << pad() << "Return" << std::endl;
 
     curLevel--;
   }
-  void visit(MulExpression& expr) {
+  void visit(MulExpression& expr) override {
     curLevel++;
 
     os << pad() << "Mul" << std::endl;
@@ -170,7 +170,7 @@ public:
     curLevel--;
   }
 
-  void visit(VarExpression& expr) {
+  void visit(VarExpression& expr) override {
     curLevel++;
 
     os << pad() << "VarDecl " << expr.name << "<";
@@ -183,13 +183,13 @@ public:
     curLevel--;
   }
 
-  void visit(NestedListExpression& expr) {
+  void visit(NestedListExpression& expr) override {
     curLevel++;
     printNestedList(*expr.nestedList);
     curLevel--;
   }
 
-  void visit(DispatchExpression& expr) {
+  void visit(DispatchExpression& expr) override {
     curLevel++;
     os << pad() << "Call '" << expr.name << "'" << std::endl;
     curLevel++;
@@ -200,7 +200,7 @@ public:
     curLevel--;
   }
 
-  void visit(Error& err) {
+  void visit(Error& err) override {
     curLevel++;
 
     os << pad() << "Error" << std::endl;
@@ -219,7 +219,7 @@ private:
 
   string printFormalsOrArgs(vector<string>& formalsOrArgs) {
     string ret;
-    for (int i = 0; i < formalsOrArgs.size(); i++) {
+    for (size_t i = 0; i < formalsOrArgs.size(); i++) {
       ret += formalsOrArgs[i];
       if (i != formalsOrArgs.size() - 1) {
         ret += ", ";
@@ -232,13 +232,13 @@ private:
     os << pad() << "Literal: [";
     if (std::holds_alternative<std::vector<float>>(nl.element)) {
       std::vector<float>& nums = std::get<std::vector<float>>(nl.element);
-      for (int i = 0; i < nums.size(); i++) {
+      for (size_t i = 0; i < nums.size(); i++) {
         os << nums[i];
         if (i != nums.size() - 1) os << ",";
       }
     } else {
       std::vector<NestedList> lists = std::get<std::vector<NestedList>>(nl.element);
-      for (int i = 0; i < lists.size(); i++) {
+      for (size_t i = 0; i < lists.size(); i++) {
         printNestedList(lists[i]);
         if (i != lists.size() - 1) os << ",";
       }
