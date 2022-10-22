@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _TOY_OPS_H
+#define _TOY_OPS_H
+
 
 #include "mlir/IR/BuiltinTypes.h"
 #include "mlir/IR/Dialect.h"
@@ -7,4 +9,6 @@
 #include "mlir/Interfaces/SideEffectInterfaces.h"
 
 #define GET_OP_CLASSES
-#include "dialect/ToyDialect.h.inc"
+#include "Toy/ToyOps.h.inc"
+
+#endif

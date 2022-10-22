@@ -29,7 +29,7 @@ add_definitions(${LLVM_DEFINITIONS})
 add_subdirectory(lexer)
 add_subdirectory(parser)
 add_subdirectory(lib)
-add_subdirectory(dialect)
+add_subdirectory(include)
 add_subdirectory(codegen)
 
 add_executable(lexer-driver lexer-driver.cpp)

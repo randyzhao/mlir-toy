@@ -1,5 +1,5 @@
-#ifndef _TOY_DIALECT
-#define _TOY_DIALECT
+#ifndef _TOY_DIALECT_TD
+#define _TOY_DIALECT_TD
 
 include "mlir/IR/OpBase.td"
 

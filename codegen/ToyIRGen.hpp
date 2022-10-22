@@ -5,6 +5,7 @@
 #include "mlir/IR/MLIRContext.h"
 
 #include "../lib/ast.hpp"
+#include "Toy/ToyDialect.h"
 
 class ToyIRGen: AST::Visitor {
 public:
@@ -12,7 +13,7 @@ public:
   void visit(AST::Function& function) override;
 
   ToyIRGen(): builder(&context) {
-    // context.getOrLoadDialect<mlir::toy::ToyDialect>();
+    context.getOrLoadDialect<toy::ToyDialect>();
   }
 
 private:
