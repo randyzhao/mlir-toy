@@ -7,12 +7,12 @@
 #include "Toy/ToyOpsDialect.cpp.inc"
 
 using namespace mlir;
-using namespace mlir::toy;
+using namespace toy;
 
 
 
-void ToyDialect::Initialize() {
-  addOperation<
+void ToyDialect::initialize() {
+  addOperations<
 #define GET_OP_LIST
 #include "Toy/ToyOps.cpp.inc"
   >();

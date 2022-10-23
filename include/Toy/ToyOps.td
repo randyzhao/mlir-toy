@@ -3,9 +3,11 @@
 
 include "ToyDialect.td"
 
+include "mlir/IR/OpBase.td"
 include "mlir/IR/FunctionInterfaces.td"
 include "mlir/IR/SymbolInterfaces.td"
 include "mlir/Interfaces/SideEffectInterfaces.td"
+
 
 def ConstantOp: ToyOp<"constant", [NoSideEffect]> {
   let summary = "constant";
@@ -18,7 +20,7 @@ def ConstantOp: ToyOp<"constant", [NoSideEffect]> {
   let results = (outs F64Tensor);
 
   let builders = [
-    OpBuilder<(ins "DenseElementsAttr":$value), [{
+    OpBuilder<(ins "::mlir::DenseElementsAttr":$value), [{
       build($_builder, $_state, value.getType(), value);
     }]>,
 
@@ -34,7 +36,7 @@ def TransposeOp: ToyOp<"transpose"> {
   let results = (outs F64Tensor);
 
   let builders = [
-    OpBuilder<(ins "Value":$input)>
+    OpBuilder<(ins "::mlir::Value":$input)>
   ];
 
   let hasVerifier = 1;
@@ -53,7 +55,7 @@ def FuncOp: ToyOp<"func", [
   let regions = (region AnyRegion:$body);
 
   let builders = [OpBuilder<(ins
-    "StringRef":$name, CArg<"ArrayRef<NamedAttribute>", "{}">:$attrs)
+    "::llvm::StringRef":$name, CArg<"::llvm::ArrayRef<::mlir::NamedAttribute>", "{}">:$attrs)
   >];
 }
 
@@ -66,7 +68,7 @@ def CallOp: ToyOp<"call"> {
   let results = (outs F64Tensor);
 
   let builders = [
-    OpBuilder<(ins "StringRef":$callee, "ArrayRef<Value>":$arguments)>
+    OpBuilder<(ins "::llvm::StringRef":$callee, "::llvm::ArrayRef<::mlir::Value>":$arguments)>
   ];
 }
 

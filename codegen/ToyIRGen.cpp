@@ -1,4 +1,9 @@
+#include "Toy/ToyDialect.h"
+#include "Toy/ToyOps.h"
+
 #include "ToyIRGen.hpp"
+
+using namespace toy;
 
 void ToyIRGen::visit(AST::Module& module) {
   theModule = mlir::ModuleOp::create(builder.getUnknownLoc());
@@ -12,7 +17,7 @@ void ToyIRGen::visit(AST::Function& function) {
     builder.getF64Type()
   );
   auto funcType = builder.getFunctionType(argTypes, llvm::None);
-  return builder.create<mlir::toy::FuncOp>(
+  builder.create<toy::FuncOp>(
     builder.getUnknownLoc(),
     function.name,
     funcType
