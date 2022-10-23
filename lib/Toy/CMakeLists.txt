@@ -1,5 +1,3 @@
-add_mlir_dialect(ToyOps toy)
-
 set(LLVM_TARGET_DEFINITIONS ToyOps.td)
 
 add_mlir_dialect_library(MLIRToy

@@ -18,7 +18,7 @@
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/ToolOutputFile.h"
 
-#include "ToyIRGen.hpp"
+#include "codegen/ToyIRGen.hpp"
 #include "lexer.hpp"
 #include "parser.hpp"
 
