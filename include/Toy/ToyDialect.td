@@ -11,6 +11,8 @@ def ToyDialect: Dialect {
   }];
 
   let cppNamespace = "::toy";
+
+  let emitAccessorPrefix = kEmitAccessorPrefix_Prefixed;
 }
 
 class ToyOp<string mnemonic, list<Trait> traits = []>:

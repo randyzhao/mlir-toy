@@ -49,14 +49,32 @@ def FuncOp: ToyOp<"func", [
   let description = "user defined function op";
 
   let arguments = (ins
-    SymbolNameAttr:$sym_name
+    SymbolNameAttr:$sym_name,
+    TypeAttrOf<FunctionType>:$function_type
   );
 
   let regions = (region AnyRegion:$body);
 
   let builders = [OpBuilder<(ins
-    "::llvm::StringRef":$name, CArg<"::llvm::ArrayRef<::mlir::NamedAttribute>", "{}">:$attrs)
+    "::llvm::StringRef":$name, 
+    "::mlir::FunctionType":$type, 
+    CArg<"::llvm::ArrayRef<::mlir::NamedAttribute>", "{}">:$attrs)
   >];
+
+  let extraClassDeclaration = [{
+    //===------------------------------------------------------------------===//
+    // FunctionOpInterface Methods
+    //===------------------------------------------------------------------===//
+
+    /// Returns the argument types of this function.
+    ::llvm::ArrayRef<::mlir::Type> getArgumentTypes() { return getFunctionType().getInputs(); }
+
+    /// Returns the result types of this function.
+    ::llvm::ArrayRef<::mlir::Type> getResultTypes() { return getFunctionType().getResults(); }
+  }];
+
+  let hasCustomAssemblyFormat = 1;
+  let skipDefaultBuilders = 1;
 }
 
 def CallOp: ToyOp<"call"> {
