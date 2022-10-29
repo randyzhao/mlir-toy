@@ -73,7 +73,6 @@ def FuncOp: ToyOp<"func", [
     ::llvm::ArrayRef<::mlir::Type> getResultTypes() { return getFunctionType().getResults(); }
   }];
 
-  let hasCustomAssemblyFormat = 1;
   let skipDefaultBuilders = 1;
 }
 
