@@ -3,6 +3,8 @@
 
 #include "ToyIRGen.hpp"
 
+#include <iostream>
+
 using namespace toy;
 
 void ToyIRGen::visit(AST::Module& module) {
@@ -16,6 +18,9 @@ void ToyIRGen::visit(AST::Function& function) {
     function.formals.size(),
     builder.getF64Type()
   );
+  
+  builder.setInsertionPointToEnd(theModule.getBody());
+
   auto funcType = builder.getFunctionType(argTypes, llvm::None);
   builder.create<toy::FuncOp>(
     builder.getUnknownLoc(),

@@ -16,6 +16,7 @@ public:
     context.getOrLoadDialect<toy::ToyDialect>();
   }
 
+  void dump() { theModule.dump(); }
 private:
   mlir::ModuleOp theModule;
   mlir::OpBuilder builder;

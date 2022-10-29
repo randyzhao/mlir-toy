@@ -40,5 +40,7 @@ int main(int argc, char **argv) {
   ToyIRGen gen;
   gen.visit(*module);
 
+  gen.dump();
+
   return 0;
 }
