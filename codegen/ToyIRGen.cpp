@@ -4,7 +4,7 @@
 #include "Toy/ToyDialect.h"
 #include "Toy/ToyOps.h"
 
-#include "ToyIRGen.hpp"
+#include "codegen/ToyIRGen.hpp"
 
 #include <iostream>
 
