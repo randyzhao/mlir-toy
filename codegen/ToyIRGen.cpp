@@ -10,6 +10,16 @@
 
 using namespace toy;
 
+namespace {
+  mlir::Type getTypeFromShape(mlir::OpBuilder& builder, llvm::ArrayRef<int64_t> shape) {
+    if (shape.empty()) {
+      return mlir::UnrankedTensorType::get(builder.getF32Type());
+    }
+
+    return mlir::RankedTensorType::get(shape, builder.getF32Type());
+  }
+}
+
 void ToyIRGen::visit(AST::Module& module) {
   theModule = mlir::ModuleOp::create(builder.getUnknownLoc());
 
@@ -19,7 +29,7 @@ void ToyIRGen::visit(AST::Module& module) {
 void ToyIRGen::visit(AST::Function& function) {
   llvm::SmallVector<mlir::Type, 4> argTypes(
     function.formals.size(),
-    builder.getF64Type()
+    builder.getF32Type()
   );
   
   builder.setInsertionPointToEnd(theModule.getBody());
@@ -55,4 +65,25 @@ void ToyIRGen::visit(AST::VarDeclExpression& expr) {
   }
 
   symTab.insert(expr.name, initValue);  
+}
+
+void ToyIRGen::visit(AST::NestedListExpression& expr) {
+  std::vector<float> data;
+  expr.nestedList->flattenTo(data);
+
+  mlir::Type elementType = builder.getF32Type();
+  vector<int64_t> shape;
+  expr.nestedList->getShape(shape);
+
+  llvm::ArrayRef<int64_t> dims(shape);
+
+  auto dataType = mlir::RankedTensorType::get(dims, elementType);
+
+  auto dataAttribute = mlir::DenseElementsAttr::get(dataType, llvm::makeArrayRef(data));
+
+  exprVal = builder.create<toy::ConstantOp>(
+    builder.getUnknownLoc(),
+    getTypeFromShape(builder, shape),
+    dataAttribute
+  );
 }

@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <ostream>
+#include <iostream>
 #include <variant>
 
 using std::vector;
@@ -45,6 +46,29 @@ struct NestedList {
   ListElement element;
 
   explicit NestedList(ListElement element): element(std::move(element)) {}
+
+  void flattenTo(vector<float>& data) {
+    if (std::holds_alternative<ListOfNestedLists>(element)) {
+      for (auto& nestedList: std::get<ListOfNestedLists>(element)) {
+        nestedList.flattenTo(data);
+      }
+    } else {
+      for (float f: std::get<FloatList>(element)) {
+        data.push_back(f);
+      }
+    }
+  }
+
+  void getShape(vector<int64_t>& shape) {
+    if (std::holds_alternative<ListOfNestedLists>(element)) {
+      auto& lists = std::get<ListOfNestedLists>(element);
+      shape.push_back(lists.size());
+      lists[0].getShape(shape);
+    } else {
+      auto& floats = std::get<FloatList>(element);
+      shape.push_back(floats.size());
+    }
+  }
 };
 
 struct ASTNode {
