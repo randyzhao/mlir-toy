@@ -89,7 +89,7 @@ unique_ptr<AST::Expression> Parser::parseExpression() {
     consume();
     return std::make_unique<AST::ReturnExpression>(parseExpression());
   } else if (getCurrentTok() == Token::Var) {
-    return parseVarExpression();
+    return parseVarDeclExpression();
   } else if (getCurrentTok() == Token::SingleChar && sval.singleCharValue == '[') {
     return parseNestedListExpression();
   } else if (getCurrentTok() == Token::Identifier &&
@@ -101,7 +101,7 @@ unique_ptr<AST::Expression> Parser::parseExpression() {
   return nullptr;
 }
 
-unique_ptr<AST::VarExpression> Parser::parseVarExpression() {
+unique_ptr<AST::VarDeclExpression> Parser::parseVarDeclExpression() {
   // TODO: Handle error
 
   consume(); // var
@@ -118,7 +118,7 @@ unique_ptr<AST::VarExpression> Parser::parseVarExpression() {
     consume(); // =
     init = std::move(parseExpression());
   }
-  return std::make_unique<AST::VarExpression>(name, shape, std::move(init));
+  return std::make_unique<AST::VarDeclExpression>(name, shape, std::move(init));
 }
 
 unique_ptr<AST::NestedListExpression> Parser::parseNestedListExpression() {

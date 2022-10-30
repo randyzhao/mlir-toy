@@ -25,7 +25,7 @@ private:
   vector<string> parseFormalsOrArgs();
   vector<unique_ptr<AST::Expression> > parseExpressions();
   unique_ptr<AST::Expression> parseExpression();
-  unique_ptr<AST::VarExpression> parseVarExpression();
+  unique_ptr<AST::VarDeclExpression> parseVarDeclExpression();
   unique_ptr<AST::NestedListExpression> parseNestedListExpression();
   unique_ptr<AST::DispatchExpression> parseDispatchExpression();
   vector<int> parseIntegerList();

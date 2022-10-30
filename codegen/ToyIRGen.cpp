@@ -1,3 +1,6 @@
+#include "llvm/ADT/ScopedHashTable.h"
+#include "llvm/ADT/StringRef.h"
+
 #include "Toy/ToyDialect.h"
 #include "Toy/ToyOps.h"
 
@@ -22,9 +25,34 @@ void ToyIRGen::visit(AST::Function& function) {
   builder.setInsertionPointToEnd(theModule.getBody());
 
   auto funcType = builder.getFunctionType(argTypes, llvm::None);
-  builder.create<toy::FuncOp>(
+  toy::FuncOp funcOp = builder.create<toy::FuncOp>(
     builder.getUnknownLoc(),
     function.name,
     funcType
   );
+
+  mlir::Block &entryBlock = funcOp.front();
+
+  builder.setInsertionPointToStart(&entryBlock);
+
+  codeGenFunctionBody(function.expressions);
+}
+
+void ToyIRGen::codeGenFunctionBody(vector<unique_ptr<AST::Expression> >& expressions) {
+  llvm::ScopedHashTableScope<llvm::StringRef, mlir::Value> varScope(symTab);
+  for (auto& expr: expressions) {
+    expr->accept(*this);
+  }
+}
+
+void ToyIRGen::visit(AST::VarDeclExpression& expr) {
+  expr.init->accept(*this);
+  mlir::Value initValue = exprVal;
+
+  if (symTab.count(expr.name)) {
+    mlir::emitError(builder.getUnknownLoc(), "var declared already");
+    return;
+  }
+
+  symTab.insert(expr.name, initValue);  
 }

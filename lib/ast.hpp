@@ -20,7 +20,7 @@ struct Expression;
 struct MulExpression;
 struct DispatchExpression;
 struct NestedListExpression;
-struct VarExpression;
+struct VarDeclExpression;
 struct DispatchExpression;
 struct Error;
 
@@ -31,7 +31,7 @@ struct Visitor {
   virtual void visit(Function& function) {}
   virtual void visit(ReturnExpression& expr) {}
   virtual void visit(MulExpression& expr) {}
-  virtual void visit(VarExpression& expr) {}
+  virtual void visit(VarDeclExpression& expr) {}
   virtual void visit(DispatchExpression& expr) {}
   virtual void visit(NestedListExpression& expr) {}
   virtual void visit(Error& err) {}
@@ -84,13 +84,13 @@ struct ReturnExpression: Expression {
   ReturnExpression(unique_ptr<Expression> expr): expr(std::move(expr)) {}
 };
 
-struct VarExpression: Expression {
+struct VarDeclExpression: Expression {
   string name;
   vector<int> shape;
   unique_ptr<Expression> init;
   void accept(Visitor& visitor) override { visitor.visit(*this); }
 
-  VarExpression(string name, vector<int>& shape, unique_ptr<Expression> init):
+  VarDeclExpression(string name, vector<int>& shape, unique_ptr<Expression> init):
     name(name), shape(std::move(shape)), init(std::move(init)) {}
 };
 
@@ -170,7 +170,7 @@ public:
     curLevel--;
   }
 
-  void visit(VarExpression& expr) override {
+  void visit(VarDeclExpression& expr) override {
     curLevel++;
 
     os << pad() << "VarDecl " << expr.name << "<";
