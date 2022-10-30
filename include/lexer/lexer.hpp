@@ -6,13 +6,18 @@
 
 class Lexer {
 public:
-  Lexer(): hasError(false), curChar(' ') {}
+  Lexer(std::istream& is): hasError(false), curChar(' '), is(is) {}
 
-  Token getNextToken(SemanticValue& sval, std::istream& is);
+  Token getNextToken(SemanticValue& sval);
 private:
   bool hasError;
   char curChar;
-  std::string scanIdentifierOrKeyword(std::istream& is);
-  float scanFloat(std::istream& is);
-  void handleLineComment(std::istream& is);
+  std::istream& is;
+
+  std::string scanIdentifierOrKeyword();
+  float scanFloat();
+  void handleLineComment();
+
+  int cur_line_number = 0;
+  int cur_col = 0;
 };

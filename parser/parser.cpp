@@ -183,14 +183,14 @@ unique_ptr<AST::NestedList> Parser::parseNestedList() {
 
 Token Parser::getCurrentTok() {
   if (curTok == Token::Nil) {
-    curTok = lexer.getNextToken(sval, is);
+    curTok = lexer.getNextToken(sval);
   }
   return curTok;
 }
 
 Token Parser::getNextTok() {
   if (nextTok == Token::Nil) {
-    nextTok = lexer.getNextToken(nextSVal, is);
+    nextTok = lexer.getNextToken(nextSVal);
   }
   return nextTok;
 }

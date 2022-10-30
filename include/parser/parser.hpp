@@ -11,12 +11,11 @@ using std::unique_ptr;
 
 class Parser {
 public:
-  Parser(Lexer& lexer, std::istream& is): lexer(lexer), is(is) {}
+  Parser(Lexer& lexer): lexer(lexer){}
   unique_ptr<AST::Module> parse();
 
 private:
   Lexer& lexer;
-  std::istream& is;
   Token getCurrentTok();
   Token getNextTok();
   void consume();

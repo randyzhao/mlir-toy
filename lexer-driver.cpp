@@ -9,12 +9,12 @@ int main(int argc, char **argv) {
   std::string filename = argc < 2 ? "test.toy" : argv[1];
   std::ifstream fin(filename, std::ifstream::in);
   Token tok;
-  Lexer lexer;
+  Lexer lexer(fin);
   SemanticValue sval;
 
   std::cout << "Start scanning" << std::endl;
 
-  while ((tok = lexer.getNextToken(sval, fin)) != Token::Eof) {
+  while ((tok = lexer.getNextToken(sval)) != Token::Eof) {
     switch (tok) {
     case Token::Def:
       std::cout << "def" << std::endl;

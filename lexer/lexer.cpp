@@ -7,14 +7,14 @@
 #include "commons.hpp"
 
 
-Token Lexer::getNextToken(SemanticValue& sval, std::istream& is) {
-  while (is.good() && (curChar == ' ' || curChar == '\n' || curChar == '\t')) {
+Token Lexer::getNextToken(SemanticValue& sval) {
+  while (is.good() && (curChar == ' ' || curChar == '\n')) {
     is.get(curChar);
   };
   if (!is.good()) return Token::Eof;
 
   if (isalpha(curChar) || curChar == '_') { // identifier or keyword
-    std::string alphaNum = scanIdentifierOrKeyword(is);
+    std::string alphaNum = scanIdentifierOrKeyword();
     if (alphaNum == "def") return Token::Def;
     if (alphaNum == "var") return Token::Var;
 
@@ -22,10 +22,10 @@ Token Lexer::getNextToken(SemanticValue& sval, std::istream& is) {
     sval.identifierValue = alphaNum;
     return Token::Identifier;
   } else if (isdigit(curChar)) { // float const
-    sval.floatConstValue = scanFloat(is);
+    sval.floatConstValue = scanFloat();
     return hasError ? Token::Error : Token::FloatConst;
   } else if (curChar == '#') {
-    handleLineComment(is);
+    handleLineComment();
   } else { // single char
     sval.singleCharValue = curChar;
     is.get(curChar);
@@ -35,7 +35,7 @@ Token Lexer::getNextToken(SemanticValue& sval, std::istream& is) {
   return Token::Error;
 }
 
-std::string Lexer::scanIdentifierOrKeyword(std::istream& is) {
+std::string Lexer::scanIdentifierOrKeyword() {
   std::string ret(1, curChar);
   is.get(curChar);
   while (isalnum(curChar) || curChar == '_') {
@@ -45,7 +45,7 @@ std::string Lexer::scanIdentifierOrKeyword(std::istream& is) {
   return ret;
 }
 
-float Lexer::scanFloat(std::istream& is) {
+float Lexer::scanFloat() {
   assert(isdigit(curChar));
 
   bool hasDot = false;
@@ -64,7 +64,7 @@ float Lexer::scanFloat(std::istream& is) {
   return std::stof(raw);
 }
 
-void Lexer::handleLineComment(std::istream& is) {
+void Lexer::handleLineComment() {
   is.get(curChar);
   while (is.good() && curChar != '\n') is.get(curChar);
 }
