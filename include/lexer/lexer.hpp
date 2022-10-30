@@ -1,7 +1,7 @@
 #pragma once
 
 #include <istream>
-#include "../lib/commons.hpp"
+#include "commons.hpp"
 
 
 class Lexer {

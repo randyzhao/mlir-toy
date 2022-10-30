@@ -1,9 +1,9 @@
 #include <fstream>
 #include <iostream>
 
-#include "lib/ast.hpp"
-#include "parser.hpp"
-#include "lexer.hpp"
+#include "ast.hpp"
+#include "parser/parser.hpp"
+#include "lexer/lexer.hpp"
 
 int main(int argc, char **argv) {
   std::string filename = argc < 2 ? "test.toy" : argv[1];

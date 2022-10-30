@@ -2,8 +2,8 @@
 #include <fstream>
 #include <string>
 
-#include "lexer.hpp"
-#include "lib/commons.hpp"
+#include "lexer/lexer.hpp"
+#include "commons.hpp"
 
 int main(int argc, char **argv) {
   std::string filename = argc < 2 ? "test.toy" : argv[1];

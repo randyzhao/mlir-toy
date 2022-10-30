@@ -1,6 +1,6 @@
 #include <memory>
 
-#include "parser.hpp"
+#include "parser/parser.hpp"
 
 using std::unique_ptr;
 

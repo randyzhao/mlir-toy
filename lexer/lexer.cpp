@@ -3,8 +3,8 @@
 #include <string>
 #include <cassert>
 
-#include "lexer.hpp"
-#include "../lib/commons.hpp"
+#include "lexer/lexer.hpp"
+#include "commons.hpp"
 
 
 Token Lexer::getNextToken(SemanticValue& sval, std::istream& is) {

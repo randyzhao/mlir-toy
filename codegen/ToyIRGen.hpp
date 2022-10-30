@@ -10,7 +10,7 @@
 #include "mlir/IR/Builders.h"
 #include "mlir/IR/MLIRContext.h"
 
-#include "../lib/ast.hpp"
+#include "ast.hpp"
 #include "Toy/ToyDialect.h"
 
 using std::vector;

@@ -3,9 +3,9 @@
 #include <memory>
 #include <istream>
 
-#include "lexer.hpp"
-#include "../lib/ast.hpp"
-#include "../lib/commons.hpp"
+#include "lexer/lexer.hpp"
+#include "ast.hpp"
+#include "commons.hpp"
 
 using std::unique_ptr;
 

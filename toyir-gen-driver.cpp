@@ -19,8 +19,8 @@
 #include "llvm/Support/ToolOutputFile.h"
 
 #include "codegen/ToyIRGen.hpp"
-#include "lexer.hpp"
-#include "parser.hpp"
+#include "lexer/lexer.hpp"
+#include "parser/parser.hpp"
 
 int main(int argc, char **argv) {
   std::string filename = argc < 2 ? "test.toy" : argv[1];
