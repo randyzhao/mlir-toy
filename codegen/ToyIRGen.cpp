@@ -18,10 +18,18 @@ namespace {
 
     return mlir::RankedTensorType::get(shape, builder.getF32Type());
   }
+
+  mlir::Location toMLIRLocaction(mlir::OpBuilder& builder, const Location& loc) {
+    return mlir::FileLineColLoc::get(
+      builder.getStringAttr(*loc.filename), 
+      loc.lineNumber, 
+      loc.col
+    );
+  }
 }
 
 void ToyIRGen::visit(AST::Module& module) {
-  theModule = mlir::ModuleOp::create(builder.getUnknownLoc());
+  theModule = mlir::ModuleOp::create(toMLIRLocaction(builder, module.loc));
 
   for (auto &func : module.functions) func->accept(*this);
 }

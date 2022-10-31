@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
   std::string filename = argc < 2 ? "test.toy" : argv[1];
   std::ifstream fin(filename, std::ifstream::in);
 
-  Lexer lexer(fin);
+  Lexer lexer(fin, filename);
   Parser parser(lexer);
 
   auto module = parser.parse();

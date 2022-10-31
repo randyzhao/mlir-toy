@@ -7,6 +7,8 @@
 #include <iostream>
 #include <variant>
 
+#include "commons.hpp"
+
 using std::vector;
 using std::unique_ptr;
 using std::string;
@@ -71,21 +73,30 @@ struct NestedList {
   }
 };
 
+
+
 struct ASTNode {
   virtual void accept(Visitor& visitor) = 0;
   virtual ~ASTNode() {}
+
+  Location loc;
+
+  ASTNode(Location loc): loc(std::move(loc)) { }
 };
 
 struct Error: ASTNode {
   string errorMsg;
   void accept(Visitor& visitor) override { visitor.visit(*this); }
 
-  Error(string errorMsg): errorMsg(errorMsg) {}
+  Error(Location loc, string errorMsg): ASTNode(std::move(loc)), errorMsg(errorMsg) {}
 };
 
 struct Module: ASTNode {
   vector<unique_ptr<Function> > functions;
   void accept(Visitor& visitor) override { visitor.visit(*this); }
+
+  Module(Location loc, vector<unique_ptr<Function> > functions):
+    ASTNode(std::move(loc)), functions(std::move(functions)) { }
 };
 
 struct Function: ASTNode {
@@ -94,10 +105,16 @@ struct Function: ASTNode {
   vector<unique_ptr<Expression> > expressions;
 
   void accept(Visitor& visitor) override { visitor.visit(*this); }
+
+  Function(Location loc, string name, vector<string> formals, vector<unique_ptr<Expression> > expression):
+    ASTNode(std::move(loc)), name(std::move(name)), formals(std::move(formals)),
+    expressions(std::move(expressions)) { }
 };
 
 struct Expression: ASTNode {
   virtual void accept(Visitor& visitor) override = 0;
+
+  Expression(Location loc): ASTNode(std::move(loc)) { }
 };
 
 struct ReturnExpression: Expression {
@@ -105,7 +122,9 @@ struct ReturnExpression: Expression {
 
   void accept(Visitor& visitor) override { visitor.visit(*this); }
 
-  ReturnExpression(unique_ptr<Expression> expr): expr(std::move(expr)) {}
+  ReturnExpression(Location loc, unique_ptr<Expression> expr): 
+    Expression(std::move(loc)),
+    expr(std::move(expr)) {}
 };
 
 struct VarDeclExpression: Expression {
@@ -114,7 +133,8 @@ struct VarDeclExpression: Expression {
   unique_ptr<Expression> init;
   void accept(Visitor& visitor) override { visitor.visit(*this); }
 
-  VarDeclExpression(string name, vector<int>& shape, unique_ptr<Expression> init):
+  VarDeclExpression(Location loc, string name, vector<int>& shape, unique_ptr<Expression> init):
+    Expression(std::move(loc)),
     name(name), shape(std::move(shape)), init(std::move(init)) {}
 };
 
@@ -128,17 +148,19 @@ struct DispatchExpression: Expression {
 
   void accept(Visitor& visitor) override { visitor.visit(*this); }
 
-  DispatchExpression(string name, vector<string> args):
-    name(name), args(std::move(args)) {}
+  DispatchExpression(Location loc, string name, vector<string> args):
+    Expression(std::move(loc)),
+    name(std::move(name)), args(std::move(args)) {}
 };
 
 struct NestedListExpression: Expression {
   unique_ptr<NestedList> nestedList;
 
-  NestedListExpression(unique_ptr<NestedList> nestedList):
-    nestedList(std::move(nestedList)) {}
-
   void accept(Visitor& visitor) override { visitor.visit(*this); }
+
+  NestedListExpression(Location loc, unique_ptr<NestedList> nestedList):
+    Expression(std::move(loc)),
+    nestedList(std::move(nestedList)) {}
 };
 
 class ASTDumper: Visitor {

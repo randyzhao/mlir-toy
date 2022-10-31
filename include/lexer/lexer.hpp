@@ -3,21 +3,28 @@
 #include <istream>
 #include "commons.hpp"
 
-
 class Lexer {
 public:
-  Lexer(std::istream& is): hasError(false), curChar(' '), is(is) {}
+  Lexer(std::istream& is, std::string filename): 
+    hasError(false), 
+    curChar(' '), 
+    is(is),
+    loc({std::make_shared<std::string>(std::move(filename), 0, 0)}) {}
 
   Token getNextToken(SemanticValue& sval);
+
+  Location getLocation() { return loc; }
+
 private:
   bool hasError;
   char curChar;
   std::istream& is;
 
+  Location loc;
+
   std::string scanIdentifierOrKeyword();
   float scanFloat();
   void handleLineComment();
 
-  int cur_line_number = 0;
-  int cur_col = 0;
+  void getNextChar();
 };

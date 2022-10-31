@@ -12,30 +12,34 @@ unique_ptr<AST::Module> Parser::parse() {
     return ret;
   }
 
-  auto module = std::make_unique<AST::Module>();
+  vector<unique_ptr<AST::Function> > functions;
+
   while (getCurrentTok() != Token::Eof) {
     auto func = parseFunction();
     if (func) {
-      module->functions.push_back(std::move(func));
+      functions.push_back(std::move(func));
     } else {
       return ret;
     }
   }
-  return module;
+  return std::make_unique<AST::Module>(lexer.getLocation(), std::move(functions));
 }
 
 unique_ptr<AST::Function> Parser::parseFunction() {
-  auto ret = std::make_unique<AST::Function>();
+  string name;
+  vector<string> formals;
+  vector<unique_ptr<AST::Expression> > expressions;
+
   if (getCurrentTok() != Token::Def) return nullptr;
   consume();
   if (getCurrentTok() != Token::Identifier) return nullptr;
-  ret->name = sval.identifierValue;
+  name = sval.identifierValue;
   consume();
   if (getCurrentTok() != Token::SingleChar || sval.singleCharValue != '(') {
     return nullptr;
   }
   consume();
-  ret->formals = parseFormalsOrArgs();
+  formals = parseFormalsOrArgs();
   if (getCurrentTok() != Token::SingleChar || sval.singleCharValue != ')') {
     return nullptr;
   }
@@ -47,7 +51,7 @@ unique_ptr<AST::Function> Parser::parseFunction() {
 
   while (getCurrentTok() != Token::SingleChar || sval.singleCharValue != '}') {
     auto expr = parseExpression();
-    if (expr) ret->expressions.push_back(std::move(expr));
+    if (expr) expressions.push_back(std::move(expr));
     consume(); // ;
   }
 
@@ -55,7 +59,12 @@ unique_ptr<AST::Function> Parser::parseFunction() {
     return nullptr;
   }
   consume();
-  return ret;
+  return std::make_unique<AST::Function>(
+    lexer.getLocation(), 
+    name, 
+    std::move(formals), 
+    std::move(expressions)
+  );
 }
 
 vector<string> Parser::parseFormalsOrArgs() {
@@ -87,7 +96,10 @@ vector<unique_ptr<AST::Expression> > Parser::parseExpressions() {
 unique_ptr<AST::Expression> Parser::parseExpression() {
   if (getCurrentTok() == Token::Return) {
     consume();
-    return std::make_unique<AST::ReturnExpression>(parseExpression());
+    return std::make_unique<AST::ReturnExpression>(
+      lexer.getLocation(),
+      parseExpression()
+    );
   } else if (getCurrentTok() == Token::Var) {
     return parseVarDeclExpression();
   } else if (getCurrentTok() == Token::SingleChar && sval.singleCharValue == '[') {
@@ -118,11 +130,14 @@ unique_ptr<AST::VarDeclExpression> Parser::parseVarDeclExpression() {
     consume(); // =
     init = std::move(parseExpression());
   }
-  return std::make_unique<AST::VarDeclExpression>(name, shape, std::move(init));
+  return std::make_unique<AST::VarDeclExpression>(lexer.getLocation(), name, shape, std::move(init));
 }
 
 unique_ptr<AST::NestedListExpression> Parser::parseNestedListExpression() {
-  return std::make_unique<AST::NestedListExpression>(parseNestedList());
+  return std::make_unique<AST::NestedListExpression>(
+    lexer.getLocation(),
+    parseNestedList()
+  );
 }
 
 unique_ptr<AST::DispatchExpression> Parser::parseDispatchExpression() {
@@ -131,7 +146,11 @@ unique_ptr<AST::DispatchExpression> Parser::parseDispatchExpression() {
   consume(); // (
   vector<string> args = parseFormalsOrArgs();
   consume(); // )
-  return std::make_unique<AST::DispatchExpression>(name, args);
+  return std::make_unique<AST::DispatchExpression>(
+    lexer.getLocation(),
+    name, 
+    args
+  );
 }
 
 vector<int> Parser::parseIntegerList() {

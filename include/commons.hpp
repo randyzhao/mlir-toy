@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 enum Token {
   Nil = 100,
@@ -20,4 +21,8 @@ struct SemanticValue {
   char singleCharValue;
 };
 
-
+struct Location {
+  std::shared_ptr<std::string> filename;
+  int lineNumber;
+  int col;
+};

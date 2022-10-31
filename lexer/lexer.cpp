@@ -9,7 +9,8 @@
 
 Token Lexer::getNextToken(SemanticValue& sval) {
   while (is.good() && (curChar == ' ' || curChar == '\n')) {
-    is.get(curChar);
+    if (curChar == '\n') loc.lineNumber++;
+    getNextChar();
   };
   if (!is.good()) return Token::Eof;
 
@@ -28,7 +29,7 @@ Token Lexer::getNextToken(SemanticValue& sval) {
     handleLineComment();
   } else { // single char
     sval.singleCharValue = curChar;
-    is.get(curChar);
+    getNextChar();
     return Token::SingleChar;
   }
 
@@ -37,10 +38,10 @@ Token Lexer::getNextToken(SemanticValue& sval) {
 
 std::string Lexer::scanIdentifierOrKeyword() {
   std::string ret(1, curChar);
-  is.get(curChar);
+  getNextChar();
   while (isalnum(curChar) || curChar == '_') {
     ret += curChar;
-    is.get(curChar);
+    getNextChar();
   }
   return ret;
 }
@@ -50,7 +51,7 @@ float Lexer::scanFloat() {
 
   bool hasDot = false;
   std::string raw(1, curChar);
-  is.get(curChar);
+  getNextChar();
   while (isdigit(curChar) || curChar == '.') {
     if (curChar == '.') {
       if (hasDot) {
@@ -65,6 +66,11 @@ float Lexer::scanFloat() {
 }
 
 void Lexer::handleLineComment() {
+  getNextChar();
+  while (is.good() && curChar != '\n') getNextChar();
+}
+
+void Lexer::getNextChar() {
+  loc.col++;
   is.get(curChar);
-  while (is.good() && curChar != '\n') is.get(curChar);
 }
