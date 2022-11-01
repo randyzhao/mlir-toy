@@ -53,17 +53,17 @@ mlir::LogicalResult ConstantOp::verify() {
   return mlir::success();
 }
 
-mlir::LogicalResult TransposeOp::verify() {
-  auto inputType = getOperand().getType().dyn_cast<RankedTensorType>();
-  auto resultType = getType().dyn_cast<RankedTensorType>();
-  if (!inputType || !resultType)
-    return mlir::success();
+// mlir::LogicalResult TransposeOp::verify() {
+//   auto inputType = getOperand().getType().dyn_cast<RankedTensorType>();
+//   auto resultType = getType().dyn_cast<RankedTensorType>();
+//   if (!inputType || !resultType)
+//     return mlir::success();
 
-  auto inputShape = inputType.getShape();
-  if (!std::equal(inputShape.begin(), inputShape.end(),
-                  resultType.getShape().rbegin())) {
-    return emitError()
-           << "expected result shape to be a transpose of the input";
-  }
-  return mlir::success();
-}
+//   auto inputShape = inputType.getShape();
+//   if (!std::equal(inputShape.begin(), inputShape.end(),
+//                   resultType.getShape().rbegin())) {
+//     return emitError()
+//            << "expected result shape to be a transpose of the input";
+//   }
+//   return mlir::success();
+// }

@@ -30,18 +30,6 @@ def ConstantOp: ToyOp<"constant", [NoSideEffect]> {
   let hasVerifier = 1;
 }
 
-def TransposeOp: ToyOp<"transpose"> {
-  let summary = "transpose op";
-  let arguments = (ins F64Tensor:$input);
-  let results = (outs F64Tensor);
-
-  let builders = [
-    OpBuilder<(ins "::mlir::Value":$input)>
-  ];
-
-  let hasVerifier = 1;
-}
-
 def FuncOp: ToyOp<"func", [
   FunctionOpInterface, IsolatedFromAbove, Symbol
 ]> {
@@ -76,16 +64,29 @@ def FuncOp: ToyOp<"func", [
   let skipDefaultBuilders = 1;
 }
 
-def CallOp: ToyOp<"call"> {
-  let summary = "call op";
-  let description = "call op";
+def GenericDispatchOp: ToyOp<"generic_dispatch"> {
+  let summary = "generic dispatch operation";
+  let description = [{
+    Dispatch operation
+  }];
 
-  let arguments = (ins FlatSymbolRefAttr:$callee, Variadic<F64Tensor>:$input);
+  let arguments = (ins FlatSymbolRefAttr:$callee, Variadic<F32Tensor>:$inputs);
 
-  let results = (outs F64Tensor);
+  let results = (outs F32Tensor);
 
   let builders = [
-    OpBuilder<(ins "::llvm::StringRef":$callee, "::llvm::ArrayRef<::mlir::Value>":$arguments)>
+    OpBuilder<(ins "llvm::StringRef":$callee, "llvm::ArrayRef<mlir::Value>":$arguments)>
+  ];
+}
+
+def TransposeOp: ToyOp<"transpose"> {
+  let summary = "transpose operation";
+
+  let arguments = (ins F32Tensor:$input);
+  let results = (outs F32Tensor);
+
+  let builders = [
+    OpBuilder<(ins "mlir::Value":$input)>
   ];
 }
 
