@@ -22,6 +22,7 @@ public:
   void visit(AST::Function& function) override;
   void visit(AST::VarDeclExpression& expr) override;
   void visit(AST::NestedListExpression& expr) override;
+  void visit(AST::DispatchExpression& expr) override;
 
   ToyIRGen(): builder(&context) {
     context.getOrLoadDialect<toy::ToyDialect>();
