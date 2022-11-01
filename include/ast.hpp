@@ -25,6 +25,7 @@ struct DispatchExpression;
 struct NestedListExpression;
 struct VarDeclExpression;
 struct DispatchExpression;
+struct ObjectExpression;
 struct Error;
 
 struct NestedList;
@@ -37,6 +38,7 @@ struct Visitor {
   virtual void visit(VarDeclExpression& expr) {}
   virtual void visit(DispatchExpression& expr) {}
   virtual void visit(NestedListExpression& expr) {}
+  virtual void visit(ObjectExpression& expr) {}
   virtual void visit(Error& err) {}
 };
 
@@ -144,13 +146,23 @@ struct MulExpression: Expression {
 
 struct DispatchExpression: Expression {
   string name;
-  vector<string> args;
+  vector<unique_ptr<Expression>> args;
 
   void accept(Visitor& visitor) override { visitor.visit(*this); }
 
-  DispatchExpression(Location loc, string name, vector<string> args):
+  DispatchExpression(Location loc, string name, vector<unique_ptr<Expression>> args):
     Expression(std::move(loc)),
     name(std::move(name)), args(std::move(args)) {}
+};
+
+struct ObjectExpression: Expression {
+  string name;
+
+  void accept(Visitor& visitor) override { visitor.visit(*this); }
+
+  ObjectExpression(Location loc, string name):
+    Expression(std::move(loc)),
+    name(std::move(name)) { }
 };
 
 struct NestedListExpression: Expression {
@@ -239,10 +251,18 @@ public:
     curLevel++;
     os << pad() << "Call '" << expr.name << "'" << std::endl;
     curLevel++;
-    for (auto& name : expr.args) {
-      os << pad() << "var: " << name << std::endl;
+    for (auto& arg : expr.args) {
+      os << pad() << "var: ";
+      arg->accept(*this);
+      os << std::endl;
     }
     curLevel--;
+    curLevel--;
+  }
+
+  void visit(ObjectExpression& expr) override {
+    curLevel++;
+    os << pad() << "object: " << expr.name << "'" << std::endl;
     curLevel--;
   }
 

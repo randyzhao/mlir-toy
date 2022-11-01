@@ -21,7 +21,8 @@ private:
   void consume();
 
   unique_ptr<AST::Function> parseFunction();
-  vector<string> parseFormalsOrArgs();
+  vector<string> parseFormals();
+  vector<unique_ptr<AST::Expression> > parseArgs();
   vector<unique_ptr<AST::Expression> > parseExpressions();
   unique_ptr<AST::Expression> parseExpression();
   unique_ptr<AST::VarDeclExpression> parseVarDeclExpression();
@@ -31,6 +32,9 @@ private:
   vector<float> parseFloatList();
   unique_ptr<AST::NestedList> parseNestedList();
 
+  bool isCurTokSingleChar(char c) {
+    return getCurrentTok() == Token::SingleChar && sval.singleCharValue == c;
+  }
 
   Token curTok = Token::Nil;
   Token nextTok = Token::Nil;
