@@ -36,6 +36,10 @@ add_subdirectory(codegen)
 
 add_executable(lexer-driver lexer-driver.cpp)
 target_link_libraries(lexer-driver lexer)
+target_include_directories(lexer-driver
+  PRIVATE
+  ${PROJECT_SOURCE_DIR}/include
+)
 
 add_executable(parser-driver parser-driver.cpp)
 target_link_libraries(parser-driver parser)
