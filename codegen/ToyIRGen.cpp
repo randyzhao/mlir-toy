@@ -97,10 +97,19 @@ void ToyIRGen::visit(AST::NestedListExpression& expr) {
 }
 
 void ToyIRGen::visit(AST::DispatchExpression& expr) {
-  // llvm::StringRef callee = expr.name;
-  // auto loc = toMLIRLocaction(builder, expr.loc);
+  llvm::StringRef callee = expr.name;
+  auto loc = toMLIRLocaction(builder, expr.loc);
 
-  // llvm::SmallVector<mlir::Value, 4> operands;
-  
-  // TODO: Implement this after dispatch can be parsed
+  llvm::SmallVector<mlir::Value, 4> operands;
+  for (auto& expr: expr.args) {
+    expr->accept(*this);
+    operands.push_back(exprVal);
+  }
+
+  if (callee == "transpose") {
+    exprVal = builder.create<toy::TransposeOp>(loc, operands[0]);
+    return;
+  }
+
+  exprVal = builder.create<toy::GenericDispatchOp>(loc, callee, operands);
 }
