@@ -108,7 +108,7 @@ struct Function: ASTNode {
 
   void accept(Visitor& visitor) override { visitor.visit(*this); }
 
-  Function(Location loc, string name, vector<string> formals, vector<unique_ptr<Expression> > expression):
+  Function(Location loc, string name, vector<string> formals, vector<unique_ptr<Expression> > expressions):
     ASTNode(std::move(loc)), name(std::move(name)), formals(std::move(formals)),
     expressions(std::move(expressions)) { }
 };
