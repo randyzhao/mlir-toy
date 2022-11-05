@@ -215,7 +215,12 @@ unique_ptr<AST::NestedList> Parser::parseNestedList() {
 
   consume(); // [
   if (getCurrentTok() == Token::SingleChar) {
-    ret = std::make_unique<AST::NestedList>(*parseNestedList());
+    vector<AST::NestedList> lists;
+    while (isCurTokSingleChar('[')) {
+      lists.push_back(*parseNestedList());
+      if (isCurTokSingleChar(',')) consume(); // ,
+    }
+    ret = std::make_unique<AST::NestedList>(lists);
   } else {
     ret = std::make_unique<AST::NestedList>(parseFloatList());
   }
