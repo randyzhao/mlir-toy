@@ -119,3 +119,17 @@ void ToyIRGen::visit(AST::ObjectExpression& expr) {
 
   exprVal = symTab.lookup(expr.name);
 }
+
+void ToyIRGen::visit(AST::ReturnExpression& expr) {
+  auto loc = toMLIRLocaction(builder, expr.loc);
+
+  mlir::Value returnVal = nullptr;
+  if (expr.expr) {
+    expr.expr->accept(*this);
+    returnVal = exprVal;
+  }
+  builder.create<toy::ReturnOp>(
+    loc,
+    returnVal ? llvm::makeArrayRef(returnVal) : llvm::ArrayRef<mlir::Value>()
+  );
+}

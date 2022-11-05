@@ -90,4 +90,18 @@ def TransposeOp: ToyOp<"transpose"> {
   ];
 }
 
+def ReturnOp: ToyOp<"return", [NoSideEffect, HasParent<"FuncOp">, Terminator]> {
+  let summary = "return operation";
+
+  let arguments = (ins Variadic<F32Tensor>:$input);
+
+  let builders = [
+    OpBuilder<(ins), [{ build($_builder, $_state, llvm::None); }]>
+  ];
+
+  let extraClassDeclaration = [{
+    bool hasOperand() { return getNumOperands() != 0; }
+  }];
+}
+
 #endif

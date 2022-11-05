@@ -105,11 +105,12 @@ vector<unique_ptr<AST::Expression> > Parser::parseArgs() {
 
 unique_ptr<AST::Expression> Parser::parseExpression() {
   if (getCurrentTok() == Token::Return) {
-    consume();
-    return std::make_unique<AST::ReturnExpression>(
-      lexer.getLocation(),
-      parseExpression()
-    );
+    consume(); // return
+    std::unique_ptr<AST::Expression> expr = nullptr;
+    if (isCurTokSingleChar(';')) {
+      expr = parseExpression();
+    }
+    return std::make_unique<AST::ReturnExpression>(lexer.getLocation(), std::move(expr));
   } else if (getCurrentTok() == Token::Var) {
     return parseVarDeclExpression();
   } else if (getCurrentTok() == Token::SingleChar && sval.singleCharValue == '[') {
