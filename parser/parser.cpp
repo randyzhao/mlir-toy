@@ -107,7 +107,7 @@ unique_ptr<AST::Expression> Parser::parseExpression() {
   if (getCurrentTok() == Token::Return) {
     consume(); // return
     std::unique_ptr<AST::Expression> expr = nullptr;
-    if (isCurTokSingleChar(';')) {
+    if (!isCurTokSingleChar(';')) {
       expr = parseExpression();
     }
     return std::make_unique<AST::ReturnExpression>(lexer.getLocation(), std::move(expr));

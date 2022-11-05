@@ -18,6 +18,7 @@ Token Lexer::getNextToken(SemanticValue& sval) {
     std::string alphaNum = scanIdentifierOrKeyword();
     if (alphaNum == "def") return Token::Def;
     if (alphaNum == "var") return Token::Var;
+    if (alphaNum == "return") return Token::Return;
 
     // identifier
     sval.identifierValue = alphaNum;

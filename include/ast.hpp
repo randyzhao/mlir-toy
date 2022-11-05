@@ -216,7 +216,11 @@ public:
   void visit(ReturnExpression& expr) override {
     curLevel++;
 
-    os << pad() << "Return" << std::endl;
+    os << pad() << "Return ";
+    if (expr.expr) {
+      expr.expr->accept(*this);
+    }
+    os << std::endl;
 
     curLevel--;
   }
