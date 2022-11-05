@@ -113,3 +113,9 @@ void ToyIRGen::visit(AST::DispatchExpression& expr) {
 
   exprVal = builder.create<toy::GenericDispatchOp>(loc, callee, operands);
 }
+
+void ToyIRGen::visit(AST::ObjectExpression& expr) {
+  // TODO: Test if the object has been declared.
+
+  exprVal = symTab.lookup(expr.name);
+}
