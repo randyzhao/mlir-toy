@@ -35,6 +35,8 @@ void ToyIRGen::visit(AST::Module& module) {
 }
 
 void ToyIRGen::visit(AST::Function& function) {
+  llvm::ScopedHashTableScope<llvm::StringRef, mlir::Value> varScope(symTab);
+
   llvm::SmallVector<mlir::Type, 4> argTypes(
     function.formals.size(),
     builder.getF32Type()
@@ -51,13 +53,17 @@ void ToyIRGen::visit(AST::Function& function) {
 
   mlir::Block &entryBlock = funcOp.front();
 
+   // declare all function arguments
+  for (const auto nameValue: llvm::zip(function.formals, entryBlock.getArguments())) {
+    symTab.insert(std::get<0>(nameValue), std::get<1>(nameValue));
+  }
+
   builder.setInsertionPointToStart(&entryBlock);
 
   codeGenFunctionBody(function.expressions);
 }
 
 void ToyIRGen::codeGenFunctionBody(vector<unique_ptr<AST::Expression> >& expressions) {
-  llvm::ScopedHashTableScope<llvm::StringRef, mlir::Value> varScope(symTab);
   for (auto& expr: expressions) {
     expr->accept(*this);
   }
