@@ -1,5 +1,7 @@
 #include "llvm/ADT/ScopedHashTable.h"
 #include "llvm/ADT/StringRef.h"
+#include "mlir/Pass/PassManager.h"
+#include "mlir/Transforms/Passes.h"
 
 #include "Toy/ToyDialect.h"
 #include "Toy/ToyOps.h"
@@ -28,8 +30,19 @@ namespace {
   }
 }
 
+ToyIRGen::ToyIRGen(): builder(&context) {
+  context.getOrLoadDialect<toy::ToyDialect>();
+}
+
 void ToyIRGen::visit(AST::Module& module) {
   theModule = mlir::ModuleOp::create(toMLIRLocaction(builder, module.loc));
+
+  mlir::PassManager pm(&context);
+  // applyPassManagerCLOptions(pm);
+  pm.addNestedPass<toy::FuncOp>(mlir::createCanonicalizerPass());
+  if (mlir::failed(pm.run(theModule))) { 
+    // TODO:
+  }
 
   for (auto &func : module.functions) func->accept(*this);
 }

@@ -26,9 +26,7 @@ public:
   void visit(AST::ObjectExpression& expr) override;
   void visit(AST::ReturnExpression& expr) override;
 
-  ToyIRGen(): builder(&context) {
-    context.getOrLoadDialect<toy::ToyDialect>();
-  }
+  ToyIRGen();
 
   void dump() { theModule.dump(); }
 private:
