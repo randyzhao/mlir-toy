@@ -36,15 +36,13 @@ ToyIRGen::ToyIRGen(): builder(&context) {
 
 void ToyIRGen::visit(AST::Module& module) {
   theModule = mlir::ModuleOp::create(toMLIRLocaction(builder, module.loc));
+  for (auto &func : module.functions) func->accept(*this);
 
   mlir::PassManager pm(&context);
-  // applyPassManagerCLOptions(pm);
   pm.addNestedPass<toy::FuncOp>(mlir::createCanonicalizerPass());
   if (mlir::failed(pm.run(theModule))) { 
     // TODO:
   }
-
-  for (auto &func : module.functions) func->accept(*this);
 }
 
 void ToyIRGen::visit(AST::Function& function) {
