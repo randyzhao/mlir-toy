@@ -39,7 +39,9 @@ void ToyIRGen::visit(AST::Module& module) {
   for (auto &func : module.functions) func->accept(*this);
 
   mlir::PassManager pm(&context);
+  pm.addPass(mlir::createInlinerPass());
   pm.addNestedPass<toy::FuncOp>(mlir::createCanonicalizerPass());
+  
   if (mlir::failed(pm.run(theModule))) { 
     // TODO:
   }
@@ -61,6 +63,9 @@ void ToyIRGen::visit(AST::Function& function) {
     function.name,
     funcType
   );
+
+  // TODO:
+  // if (function.name != "main") funcOp.setPrivate();
 
   mlir::Block &entryBlock = funcOp.front();
 

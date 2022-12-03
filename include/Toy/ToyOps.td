@@ -6,6 +6,8 @@ include "ToyDialect.td"
 include "mlir/IR/OpBase.td"
 include "mlir/IR/FunctionInterfaces.td"
 include "mlir/IR/SymbolInterfaces.td"
+include "mlir/Interfaces/CallInterfaces.td"
+include "mlir/Interfaces/CastInterfaces.td"
 include "mlir/Interfaces/SideEffectInterfaces.td"
 
 
@@ -31,7 +33,10 @@ def ConstantOp: ToyOp<"constant", [NoSideEffect]> {
 }
 
 def FuncOp: ToyOp<"func", [
-  FunctionOpInterface, IsolatedFromAbove, Symbol
+  DeclareOpInterfaceMethods<CallableOpInterface>,
+  FunctionOpInterface, 
+  IsolatedFromAbove, 
+  Symbol
 ]> {
   let summary = "user defined function op";
   let description = "user defined function op";
@@ -62,9 +67,13 @@ def FuncOp: ToyOp<"func", [
   }];
 
   let skipDefaultBuilders = 1;
+  let hasCustomAssemblyFormat = 1;
 }
 
-def GenericDispatchOp: ToyOp<"generic_dispatch"> {
+def GenericDispatchOp: ToyOp<"generic_dispatch", [
+    DeclareOpInterfaceMethods<CallOpInterface>
+  ]>
+{
   let summary = "generic dispatch operation";
   let description = [{
     Dispatch operation
@@ -129,5 +138,26 @@ def ReshapeOp : ToyOp<"reshape"> {
   // Enable registering canonicalization patterns with this operation.
   let hasCanonicalizer = 1;
 }
+
+// def CastOp : ToyOp<"cast", [
+//      DeclareOpInterfaceMethods<CastOpInterface>,
+//      DeclareOpInterfaceMethods<ShapeInferenceOpInterface>,
+//      NoSideEffect,
+//      SameOperandsAndResultShape
+//   ]> {
+//   let summary = "shape cast operation";
+//   let description = [{
+//     The "cast" operation converts a tensor from one type to an equivalent type
+//     without changing any data elements. The source and destination types must
+//     both be tensor types with the same element type. If both are ranked, then
+//     shape is required to match. The operation is invalid if converting to a
+//     mismatching constant dimension.
+//   }];
+
+//   let arguments = (ins F64Tensor:$input);
+//   let results = (outs F64Tensor:$output);
+
+//   let assemblyFormat = "$input attr-dict `:` type($input) `to` type($output)";
+// }
 
 #endif

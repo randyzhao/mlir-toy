@@ -12,6 +12,7 @@ add_mlir_dialect_library(MLIRToy
   MLIRToyOpsIncGen
 
   LINK_LIBS PRIVATE
+  MLIRCallInterfaces
   MLIRIR
 )
 
