@@ -4,6 +4,23 @@
 
 using std::unique_ptr;
 
+namespace {
+
+int getTokPrec(char op) {
+  switch (op) {
+    default:
+      return -1;
+    case '+':
+    case '-':
+      return 20;
+    case '*':
+      return 40;
+  }
+}
+
+};
+
+
 unique_ptr<AST::Module> Parser::parse() {
   unique_ptr<AST::Module> ret = nullptr;
   getCurrentTok();
@@ -104,6 +121,11 @@ vector<unique_ptr<AST::Expression> > Parser::parseArgs() {
 }
 
 unique_ptr<AST::Expression> Parser::parseExpression() {
+  auto lhs = parsePrimary();
+  return parseBinopRHS(0, std::move(lhs));
+}
+
+unique_ptr<AST::Expression> Parser::parsePrimary() {
   if (getCurrentTok() == Token::Return) {
     consume(); // return
     std::unique_ptr<AST::Expression> expr = nullptr;
@@ -131,6 +153,33 @@ unique_ptr<AST::Expression> Parser::parseExpression() {
 
   std::cout << "parse nullptr current token " << getCurrentTok() << std::endl;
   return nullptr;
+}
+
+unique_ptr<AST::Expression> Parser::parseBinopRHS(int prevTokPrec, unique_ptr<AST::Expression> lhs) {
+  while (true) {
+    if (getCurrentTok() != Token::SingleChar) return lhs;
+
+    int tokPrec = getTokPrec(sval.singleCharValue);
+    if (tokPrec < prevTokPrec) return lhs;
+
+    char binOp = sval.singleCharValue;
+    consume(); // binOp
+
+    auto rhs = parsePrimary();
+
+    int nextTokPrec = getTokPrec(sval.singleCharValue);
+    if (tokPrec < nextTokPrec) {
+      rhs = parseBinopRHS(tokPrec, std::move(rhs));
+    }
+
+    lhs = std::make_unique<AST::BinOpExpression>(
+      lexer.getLocation(), 
+      binOp, 
+      std::move(lhs), 
+      std::move(rhs));
+  }
+
+  return lhs;
 }
 
 unique_ptr<AST::VarDeclExpression> Parser::parseVarDeclExpression() {

@@ -24,6 +24,8 @@ private:
   vector<string> parseFormals();
   vector<unique_ptr<AST::Expression> > parseArgs();
   vector<unique_ptr<AST::Expression> > parseExpressions();
+  unique_ptr<AST::Expression> parsePrimary();
+  unique_ptr<AST::Expression>parseBinopRHS(int prevTokPrec, unique_ptr<AST::Expression> lhs);
   unique_ptr<AST::Expression> parseExpression();
   unique_ptr<AST::VarDeclExpression> parseVarDeclExpression();
   unique_ptr<AST::NestedListExpression> parseNestedListExpression();

@@ -20,7 +20,7 @@ struct Module;
 struct Function;
 struct ReturnExpression;
 struct Expression;
-struct MulExpression;
+struct BinOpExpression;
 struct DispatchExpression;
 struct NestedListExpression;
 struct VarDeclExpression;
@@ -34,7 +34,7 @@ struct Visitor {
   virtual void visit(Module& module) {}
   virtual void visit(Function& function) {}
   virtual void visit(ReturnExpression& expr) {}
-  virtual void visit(MulExpression& expr) {}
+  virtual void visit(BinOpExpression& expr) {}
   virtual void visit(VarDeclExpression& expr) {}
   virtual void visit(DispatchExpression& expr) {}
   virtual void visit(NestedListExpression& expr) {}
@@ -140,8 +140,18 @@ struct VarDeclExpression: Expression {
     name(name), shape(std::move(shape)), init(std::move(init)) {}
 };
 
-struct MulExpression: Expression {
+struct BinOpExpression: Expression {
+  char op;
+  unique_ptr<Expression> lhs;
+  unique_ptr<Expression> rhs;
+
   void accept(Visitor& visitor) override { visitor.visit(*this); }
+
+  BinOpExpression(Location loc, char op, unique_ptr<Expression> lhs, unique_ptr<Expression> rhs):
+    Expression(std::move(loc)),
+    op(op),
+    lhs(std::move(lhs)),
+    rhs(std::move(rhs)) { }
 };
 
 struct DispatchExpression: Expression {
@@ -216,7 +226,7 @@ public:
   void visit(ReturnExpression& expr) override {
     curLevel++;
 
-    os << pad() << "Return ";
+    os << pad() << "Return " << std::endl;
     if (expr.expr) {
       expr.expr->accept(*this);
     }
@@ -224,10 +234,19 @@ public:
 
     curLevel--;
   }
-  void visit(MulExpression& expr) override {
+
+  void visit(BinOpExpression& expr) override {
     curLevel++;
 
-    os << pad() << "Mul" << std::endl;
+    os << pad() << "BinaryExpr: " << std::endl;
+
+    curLevel++;
+    os << pad() << "op: " << expr.op << std::endl;
+    os << pad() << "lhs: " << std::endl;
+    expr.lhs->accept(*this);
+    os << pad() << "rhs: " << std::endl;
+    expr.rhs->accept(*this);
+    curLevel--;
 
     curLevel--;
   }
