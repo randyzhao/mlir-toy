@@ -62,6 +62,7 @@ float Lexer::scanFloat() {
       hasDot = true;
     }
     raw += curChar;
+    getNextChar();
   }
   return std::stof(raw);
 }
