@@ -15,10 +15,10 @@ using namespace toy;
 namespace {
   mlir::Type getTypeFromShape(mlir::OpBuilder& builder, llvm::ArrayRef<int64_t> shape) {
     if (shape.empty()) {
-      return mlir::UnrankedTensorType::get(builder.getF32Type());
+      return mlir::UnrankedTensorType::get(builder.getF64Type());
     }
 
-    return mlir::RankedTensorType::get(shape, builder.getF32Type());
+    return mlir::RankedTensorType::get(shape, builder.getF64Type());
   }
 
   mlir::Location toMLIRLocaction(mlir::OpBuilder& builder, const Location& loc) {
@@ -52,7 +52,7 @@ void ToyIRGen::visit(AST::Function& function) {
 
   llvm::SmallVector<mlir::Type, 4> argTypes(
     function.formals.size(),
-    builder.getF32Type()
+    builder.getF64Type()
   );
   
   builder.setInsertionPointToEnd(theModule.getBody());
@@ -98,10 +98,10 @@ void ToyIRGen::visit(AST::VarDeclExpression& expr) {
 }
 
 void ToyIRGen::visit(AST::NestedListExpression& expr) {
-  std::vector<float> data;
+  std::vector<double> data;
   expr.nestedList->flattenTo(data);
 
-  mlir::Type elementType = builder.getF32Type();
+  mlir::Type elementType = builder.getF64Type();
   vector<int64_t> shape;
   expr.nestedList->getShape(shape);
 

@@ -126,7 +126,7 @@ mlir::LogicalResult ConstantOp::verify() {
 // }
 
 void TransposeOp::build(mlir::OpBuilder &builder, mlir::OperationState &state, mlir::Value value) {
-  state.addTypes(UnrankedTensorType::get(builder.getF32Type()));
+  state.addTypes(UnrankedTensorType::get(builder.getF64Type()));
   state.addOperands(value);
 }
 
@@ -135,7 +135,7 @@ void GenericDispatchOp::build(
   mlir::OperationState &state,
   StringRef callee, llvm::ArrayRef<mlir::Value> arguments)
 {
-  state.addTypes(UnrankedTensorType::get(builder.getF32Type()));
+  state.addTypes(UnrankedTensorType::get(builder.getF64Type()));
   state.addOperands(arguments);
   state.addAttribute("callee", mlir::SymbolRefAttr::get(builder.getContext(), callee));
 }

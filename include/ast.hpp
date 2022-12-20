@@ -44,20 +44,20 @@ struct Visitor {
 
 struct NestedList {
   using ListOfNestedLists = std::vector<NestedList>;
-  using FloatList = std::vector<float>;
+  using FloatList = std::vector<double>;
   using ListElement = std::variant<ListOfNestedLists, FloatList>;
 
   ListElement element;
 
   explicit NestedList(ListElement element): element(std::move(element)) {}
 
-  void flattenTo(vector<float>& data) {
+  void flattenTo(vector<double>& data) {
     if (std::holds_alternative<ListOfNestedLists>(element)) {
       for (auto& nestedList: std::get<ListOfNestedLists>(element)) {
         nestedList.flattenTo(data);
       }
     } else {
-      for (float f: std::get<FloatList>(element)) {
+      for (double f: std::get<FloatList>(element)) {
         data.push_back(f);
       }
     }
@@ -319,8 +319,8 @@ private:
 
   void printNestedList(NestedList& nl) {
     os << pad() << "Literal: [";
-    if (std::holds_alternative<std::vector<float>>(nl.element)) {
-      std::vector<float>& nums = std::get<std::vector<float>>(nl.element);
+    if (std::holds_alternative<std::vector<double>>(nl.element)) {
+      std::vector<double>& nums = std::get<std::vector<double>>(nl.element);
       for (size_t i = 0; i < nums.size(); i++) {
         os << nums[i];
         if (i != nums.size() - 1) os << ",";

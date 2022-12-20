@@ -17,7 +17,7 @@ enum Token {
 
 struct SemanticValue {
   std::string identifierValue;
-  float floatConstValue;
+  double floatConstValue;
   char singleCharValue;
 };
 

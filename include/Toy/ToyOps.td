@@ -79,9 +79,9 @@ def GenericDispatchOp: ToyOp<"generic_dispatch", [
     Dispatch operation
   }];
 
-  let arguments = (ins FlatSymbolRefAttr:$callee, Variadic<F32Tensor>:$inputs);
+  let arguments = (ins FlatSymbolRefAttr:$callee, Variadic<F64Tensor>:$inputs);
 
-  let results = (outs F32Tensor);
+  let results = (outs F64Tensor);
 
   let builders = [
     OpBuilder<(ins "llvm::StringRef":$callee, "llvm::ArrayRef<mlir::Value>":$arguments)>
@@ -91,8 +91,8 @@ def GenericDispatchOp: ToyOp<"generic_dispatch", [
 def TransposeOp: ToyOp<"transpose", [NoSideEffect]> {
   let summary = "transpose operation";
 
-  let arguments = (ins F32Tensor:$input);
-  let results = (outs F32Tensor);
+  let arguments = (ins F64Tensor:$input);
+  let results = (outs F64Tensor);
 
   let builders = [
     OpBuilder<(ins "mlir::Value":$input)>
@@ -104,7 +104,7 @@ def TransposeOp: ToyOp<"transpose", [NoSideEffect]> {
 def ReturnOp: ToyOp<"return", [NoSideEffect, HasParent<"FuncOp">, Terminator]> {
   let summary = "return operation";
 
-  let arguments = (ins Variadic<F32Tensor>:$input);
+  let arguments = (ins Variadic<F64Tensor>:$input);
 
   let builders = [
     OpBuilder<(ins), [{ build($_builder, $_state, llvm::None); }]>

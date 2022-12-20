@@ -31,7 +31,7 @@ private:
   unique_ptr<AST::NestedListExpression> parseNestedListExpression();
   unique_ptr<AST::DispatchExpression> parseDispatchExpression();
   vector<int> parseIntegerList();
-  vector<float> parseFloatList();
+  vector<double> parseFloatList();
   unique_ptr<AST::NestedList> parseNestedList();
 
   bool isCurTokSingleChar(char c) {

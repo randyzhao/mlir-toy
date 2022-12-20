@@ -241,8 +241,8 @@ vector<int> Parser::parseIntegerList() {
   return ret;
 }
 
-vector<float> Parser::parseFloatList() {
-  vector<float> ret;
+vector<double> Parser::parseFloatList() {
+  vector<double> ret;
   while (getCurrentTok() == Token::FloatConst) {
     ret.push_back(sval.floatConstValue);
     consume();
