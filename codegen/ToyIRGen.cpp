@@ -2,9 +2,11 @@
 #include "llvm/ADT/StringRef.h"
 #include "mlir/Pass/PassManager.h"
 #include "mlir/Transforms/Passes.h"
+#include "mlir/Dialect/Affine/Passes.h"
 
 #include "Toy/ToyDialect.h"
 #include "Toy/ToyOps.h"
+#include "Toy/Passes.h"
 
 #include "codegen/ToyIRGen.hpp"
 
@@ -41,6 +43,8 @@ void ToyIRGen::visit(AST::Module& module) {
   mlir::PassManager pm(&context);
   pm.addPass(mlir::createInlinerPass());
   pm.addNestedPass<toy::FuncOp>(mlir::createCanonicalizerPass());
+
+  pm.addPass(toy::createLowerToAffinePass());
   
   if (mlir::failed(pm.run(theModule))) { 
     // TODO:
