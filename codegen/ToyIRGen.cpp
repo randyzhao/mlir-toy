@@ -56,7 +56,7 @@ void ToyIRGen::visit(AST::Function& function) {
 
   llvm::SmallVector<mlir::Type, 4> argTypes(
     function.formals.size(),
-    builder.getF64Type()
+    mlir::UnrankedTensorType::get(builder.getF64Type())
   );
   
   builder.setInsertionPointToEnd(theModule.getBody());
