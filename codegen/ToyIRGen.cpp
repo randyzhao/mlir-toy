@@ -159,3 +159,25 @@ void ToyIRGen::visit(AST::ReturnExpression& expr) {
     returnVal ? llvm::makeArrayRef(returnVal) : llvm::ArrayRef<mlir::Value>()
   );
 }
+
+void ToyIRGen::visit(AST::BinOpExpression& expr) {
+  auto loc = toMLIRLocaction(builder, expr.loc);
+
+  expr.lhs->accept(*this);
+  mlir::Value lhs = exprVal;
+
+  expr.rhs->accept(*this);
+  mlir::Value rhs = exprVal;
+
+  switch (expr.op) {
+  case '+':
+    exprVal = builder.create<toy::AddOp>(loc, lhs, rhs);
+    break;
+  case '*':
+    exprVal = builder.create<toy::MulOp>(loc, lhs, rhs);
+    break;
+  default:
+    // TODO: Handle error
+    break;
+  }
+}

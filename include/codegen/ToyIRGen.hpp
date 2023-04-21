@@ -25,6 +25,7 @@ public:
   void visit(AST::DispatchExpression& expr) override;
   void visit(AST::ObjectExpression& expr) override;
   void visit(AST::ReturnExpression& expr) override;
+  void visit(AST::BinOpExpression& expr) override;
 
   ToyIRGen();
 

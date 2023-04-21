@@ -139,6 +139,34 @@ def ReshapeOp : ToyOp<"reshape"> {
   let hasCanonicalizer = 1;
 }
 
+def AddOp: ToyOp<"add", [NoSideEffect]> {
+  let summary = "element-wise add";
+  let description = [{
+    Element-wise add
+  }];
+
+  let arguments = (ins F64Tensor:$lhs, F64Tensor:$rhs);
+  let results = (outs F64Tensor);
+
+  let builders = [
+    OpBuilder<(ins "mlir::Value":$lhs, "mlir::Value":$rhs)>
+  ];
+}
+
+def MulOp: ToyOp<"add", [NoSideEffect]> {
+  let summary = "element-wise mul";
+  let description = [{
+    Element-wise mul
+  }];
+
+  let arguments = (ins F64Tensor:$lhs, F64Tensor:$rhs);
+  let results = (outs F64Tensor);
+
+  let builders = [
+    OpBuilder<(ins "mlir::Value":$lhs, "mlir::Value":$rhs)>
+  ];
+}
+
 // def CastOp : ToyOp<"cast", [
 //      DeclareOpInterfaceMethods<CastOpInterface>,
 //      DeclareOpInterfaceMethods<ShapeInferenceOpInterface>,
