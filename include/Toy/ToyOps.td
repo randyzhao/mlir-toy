@@ -153,7 +153,7 @@ def AddOp: ToyOp<"add", [NoSideEffect]> {
   ];
 }
 
-def MulOp: ToyOp<"add", [NoSideEffect]> {
+def MulOp: ToyOp<"mul", [NoSideEffect]> {
   let summary = "element-wise mul";
   let description = [{
     Element-wise mul
